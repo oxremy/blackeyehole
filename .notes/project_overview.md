@@ -6,7 +6,6 @@ Build a macOS application that allows users to fade screen black when a button i
 ## Core Functionalities
 - Fade screen black when a button is pressed
 - Menu bar icon to open settings interface for controls 
-- Visual feedback during fade operations
 
 ## Architecture
 
