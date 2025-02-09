@@ -14,13 +14,16 @@
 -   [x] Document security audit trail format (Phase 1)
 -   [x] Create entitlement justification document (Phase 1)
 -   [x] Connect preferences to display manager (Phase 1)  # Completed with settings binding
+-   [ ] Audit entitlement declarations in blackeyehole.entitlements  # New security task
+-   [ ] Implement data minimization in DisplayManager screen capture handling  # Privacy enhancement
+-   [ ] Review PermissionManager's temporary access revocation logic  # Security audit
 
 ## Medium Priority
 
 -   [x] Create entitlement justification document (Phase 1)
 -   [x] Add NSAppleEventsUsageDescription to Info.plist (Phase 1)
 -   [x] Create gamma table validation tests (Phase 1)  # Added validation tests
--   [x] Add IOPMPowerSource XCTest metrics (Phase 2)  # Newly completed
+-   [x] Add IOPMPowerSource XCTest metrics (Phase 2)  # Marked completed but needs validation
 -   [x] Create low-power mode detection system (Phase 2)  # Completed
 -   [x] Implement display buffer flushing benchmarks (Phase 2)  # Completed
 -   [x] Implement granular display state tracking (Phase 3)  # Marked completed
@@ -32,6 +35,7 @@
 -   [x] Implement settings UI automation tests (Phase 2)
 -   [x] Add fade interrupt handling tests (Phase 2)
 -   [x] Create display state serialization tests (Phase 3)
+-   [ ] Add privacy-preserving blur to sensitive UI elements  # De-prioritized from high
 
 ## Low Priority
 
@@ -58,3 +62,9 @@
 -   [x] Add display reconfiguration auditing
 -   [x] Create security audit documentation
 -   [x] Implement permission change tracking
+
+## New Tasks
+
+-   [ ] Audit entitlement declarations in blackeyehole.entitlements
+-   [ ] Implement data minimization in DisplayManager screen capture handling
+-   [ ] Review PermissionManager's temporary access revocation logic

@@ -24,6 +24,14 @@ actor DisplayManager: ObservableObject {
     private var displayStates: [CGDirectDisplayID: DisplayState] = [:]
     private let stateQueue = DispatchQueue(label: "DisplayStateQueue", qos: .userInteractive)
     
+    private let displayUpdateQueue = DispatchQueue(
+        qos: .userInitiated, 
+        autoreleaseFrequency: .workItem, 
+        target: .global(qos: .userInteractive)
+    )
+    
+    private var captureRegion: CGRect?  // User-configurable capture area
+    
     nonisolated var displayEvents: AnyPublisher<DisplayEvent, Never> {
         displaySubject.eraseToAnyPublisher()
     }
@@ -69,6 +77,7 @@ actor DisplayManager: ObservableObject {
     func handleDisplayChange(displayID: CGDirectDisplayID, flags: CGDisplayChangeSummaryFlags) {
         let isValid = validateDisplay(displayID)
         let isMainDisplay = CGDisplayIsMain(displayID) != 0
+        let bounds = captureRegion ?? CGDisplayBounds(displayID)
         
         Task {
             do {
@@ -78,7 +87,9 @@ actor DisplayManager: ObservableObject {
                     }
                     
                     activeDisplays.insert(displayID)
-                    displaySubject.send(.displayAdded(displayID: displayID, isMain: isMainDisplay))
+                    displaySubject.send(.displayAdded(displayID: displayID, 
+                                                   bounds: bounds,
+                                                   isMain: isMainDisplay))
                     logSecurityEvent(displayID: displayID, action: "display_added", context: [:])
                 } else if flags.contains(.removeFlag) {
                     activeDisplays.remove(displayID)
@@ -276,11 +287,25 @@ actor DisplayManager: ObservableObject {
                                              newState: newState)
         }
     }
+    
+    func setCaptureRegion(_ rect: CGRect?) throws {
+        guard let rect = rect else {
+            captureRegion = nil
+            return
+        }
+        
+        let mainBounds = CGDisplayBounds(CGMainDisplayID())
+        guard mainBounds.contains(rect) else {
+            throw DisplayError.invalidCaptureArea
+        }
+        
+        captureRegion = rect
+    }
 }
 
 extension DisplayManager {
     enum DisplayEvent {
-        case displayAdded(displayID: CGDirectDisplayID, isMain: Bool)
+        case displayAdded(displayID: CGDirectDisplayID, bounds: CGRect, isMain: Bool)
         case displayRemoved(displayID: CGDirectDisplayID)
         case configurationChanged(displayID: CGDirectDisplayID)
         case configurationError(error: Error)
@@ -311,6 +336,7 @@ extension DisplayManager {
         case gammaOutOfBounds
         case systemPolicyRestricted
         case unknown
+        case invalidCaptureArea
     }
 }
 

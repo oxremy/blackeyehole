@@ -16,6 +16,8 @@ final class PermissionManager: ObservableObject {
     // Add audit trail logging
     private let auditLogger = SecurityAuditLogger()
     
+    private var temporaryGrants: [PermissionType: Date] = [:]
+    
     nonisolated var authorizationStatus: AnyPublisher<Bool, Never> {
         shared.authorizationSubject.eraseToAnyPublisher()
     }
@@ -173,6 +175,34 @@ final class PermissionManager: ObservableObject {
         case keychainFailure
         case securityFrameworkError(OSStatus)
     }
+    
+    func requestTemporaryAccess(_ permission: PermissionType, 
+                               duration: TimeInterval,
+                               completion: @escaping (Bool) -> Void) {
+        guard checkSystemEnergyState() else {
+            completion(false)
+            return
+        }
+        
+        temporaryGrants[permission] = Date().addingTimeInterval(duration)
+        scheduleRevocation(for: permission, after: duration)
+        completion(true)
+    }
+    
+    private func scheduleRevocation(for permission: PermissionType, after delay: TimeInterval) {
+        DispatchQueue.global(qos: .utility).asyncAfter(deadline: .now() + delay) { [weak self] in
+            self?.temporaryGrants.removeValue(forKey: permission)
+            SecurityAuditLogger.shared.log(event: .permissionRevoked(permission: permission))
+        }
+    }
+    
+    private func checkSystemEnergyState() -> Bool {
+        let powerSource = IOPSCopyPowerSourcesInfo().takeRetainedValue()
+        guard let source = IOPSGetProvidingPowerSourceType(powerSource)?.takeRetainedValue() as String? else {
+            return false
+        }
+        return source != kIOPMACPowerKey
+    }
 }
 
 extension PermissionManager {
@@ -314,6 +344,7 @@ private struct SecurityAuditLogger {
     enum AuditEvent {
         case screenCaptureAccessRequested(granted: Bool)
         case gammaTableModified(displayID: CGDirectDisplayID)
+        case permissionRevoked(permission: PermissionType)
     }
     
     func log(event: AuditEvent) {
