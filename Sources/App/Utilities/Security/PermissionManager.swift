@@ -207,12 +207,11 @@ final class PermissionManager: ObservableObject {
 
 extension PermissionManager {
     enum PermissionError: LocalizedError {
-        case deniedByUser
         case restrictedBySystem
+        case deniedByUser
+        case appShutdown
         case unexpectedStatus
         case securityViolation
-        case appShutdown
-        case systemPolicyRestricted
         case userCancelledAuthorization
         
         var errorDescription: String? {
@@ -221,14 +220,12 @@ extension PermissionManager {
                 return NSLocalizedString("SCREEN_RECORDING_DENIED", comment: "Permission denied")
             case .restrictedBySystem:
                 return NSLocalizedString("SYSTEM_RESTRICTION", comment: "System policy restriction")
+            case .appShutdown:
+                return NSLocalizedString("APP_SHUTDOWN", comment: "Application shutdown")
             case .unexpectedStatus:
                 return NSLocalizedString("UNEXPECTED_AUTH_STATUS", comment: "Unexpected authorization state")
             case .securityViolation:
                 return NSLocalizedString("SECURITY_VIOLATION", comment: "Security protocol violation")
-            case .appShutdown:
-                return NSLocalizedString("APP_SHUTDOWN", comment: "Application shutdown")
-            case .systemPolicyRestricted:
-                return NSLocalizedString("SYSTEM_POLICY_RESTRICTED", comment: "System policy restricted")
             case .userCancelledAuthorization:
                 return NSLocalizedString("USER_CANCELLED_AUTHORIZATION", comment: "User cancelled authorization")
             }
@@ -241,8 +238,6 @@ extension PermissionManager {
             case .restrictedBySystem:
                 return NSLocalizedString("CONTACT_ADMIN", comment: "Contact system administrator")
             case .appShutdown:
-                return NSLocalizedString("RESTART_APPLICATION", comment: "Try restarting the application")
-            case .systemPolicyRestricted:
                 return NSLocalizedString("RESTART_APPLICATION", comment: "Try restarting the application")
             case .userCancelledAuthorization:
                 return NSLocalizedString("RESTART_APPLICATION", comment: "Try restarting the application")
@@ -257,14 +252,12 @@ extension PermissionManager {
                 return "User explicitly denied screen recording permission"
             case .restrictedBySystem:
                 return "MDM policy or system configuration prevents access"
+            case .appShutdown:
+                return "Application shutdown"
             case .unexpectedStatus:
                 return "Authorization status inconsistent with system state"
             case .securityViolation:
                 return "Invalid security event signature detected"
-            case .appShutdown:
-                return "Application shutdown"
-            case .systemPolicyRestricted:
-                return "MDM policy or system configuration prevents access"
             case .userCancelledAuthorization:
                 return "User cancelled authorization"
             }

@@ -1,6 +1,7 @@
 import Combine
 import CoreGraphics
 import Foundation
+import OSLog
 import Security
 
 actor DisplayManager: ObservableObject {
