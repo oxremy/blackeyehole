@@ -12,7 +12,7 @@ Build a macOS application that allows users to fade screen black when a button i
 ### UI Layer
 - **SwiftUI Components**
   - Custom animated button with fade activation
-  - Settings interface for advanced controls
+  - Settings interface for user preferences and controls
   - Visual feedback during fade operations
 
 ### Business Logic
@@ -54,3 +54,4 @@ Build a macOS application that allows users to fade screen black when a button i
 - Security audit trail
 - Energy impact disclosure
 - Recovery flow diagrams
+- Screen recording exception documentation
